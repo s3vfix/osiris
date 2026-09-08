@@ -1,5 +1,6 @@
 import { inflateRawSync } from 'zlib';
 import { get as httpGet } from 'http';
+import { get as httpsGet } from 'https';
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -18,18 +19,22 @@ import { get as httpGet } from 'http';
 const LASTUPDATE_URL = 'http://data.gdeltproject.org/gdeltv2/lastupdate.txt';
 
 /**
- * GDELT's file host is plain HTTP only — its HTTPS certificate belongs to
- * Google Cloud Storage and does not cover the domain, so TLS is not an option.
+ * GDELT's file host advertises AAAA records ahead of A records. Hosts without
+ * working IPv6 egress see the platform fetch() pick the first address and
+ * stall until its connect timeout, so requests go through Node's own client
+ * with family: 4 to pin them to IPv4 rather than depending on Happy Eyeballs
+ * behaviour we do not control.
  *
- * It also advertises AAAA records ahead of A records. Hosts without working
- * IPv6 egress see the platform fetch() pick the first address and stall until
- * its connect timeout, so we go through Node's http client with family: 4 to
- * pin the request to IPv4 instead of depending on Happy Eyeballs behaviour we
- * do not control.
+ * Every URL GDELT publishes is http, and the host now answers those with a
+ * 301 to https and a valid Google Cloud Storage certificate - so the redirect
+ * below has to switch clients with it. Following an https Location on the
+ * plain-http client throws `Protocol "https:" not supported`, which is what
+ * left this whole layer returning zero events.
  */
 function httpGetBufferIPv4(url: string, timeoutMs: number): Promise<Buffer> {
+  const get = url.startsWith('https:') ? httpsGet : httpGet;
   return new Promise((resolve, reject) => {
-    const req = httpGet(url, { family: 4, timeout: timeoutMs }, res => {
+    const req = get(url, { family: 4, timeout: timeoutMs }, res => {
       const status = res.statusCode ?? 0;
 
       if (status >= 300 && status < 400 && res.headers.location) {
