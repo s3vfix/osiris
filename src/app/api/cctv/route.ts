@@ -22,6 +22,10 @@ import { fetchPolandCameras } from './poland';
 import { fetchJapanCameras } from './japan';
 import { fetchSwitzerlandCameras } from './switzerland';
 import { fetchFinlandCameras } from './finland';
+import { fetchNorwayCameras } from './norway';
+import { fetchOpenTrafficCamCameras } from './opentrafficcam';
+import { fetchAustinCameras } from './austin';
+import { fetchWindyCameras } from './windy';
 import { fetchHongKongCameras } from './hongkong';
 import { fetchUtahCameras } from './utah';
 import { fetchIcelandCameras } from './iceland';
@@ -494,6 +498,10 @@ const RAW_REGION_FETCHERS: Record<string, RegionFetcher> = {
   'japan': fetchJapanCameras,
   'switzerland': fetchSwitzerlandCameras,
   'finland': fetchFinlandCameras,
+  'norway': fetchNorwayCameras,
+  'us-opentrafficcam': fetchOpenTrafficCamCameras,
+  'austin': fetchAustinCameras,
+  'windy': fetchWindyCameras,
   'hongkong': fetchHongKongCameras,
   'utah': fetchUtahCameras,
   'iceland': fetchIcelandCameras,
@@ -603,8 +611,9 @@ function getRegionsForBounds(lat: number, lng: number, radius: number): string[]
   const inPoland = lat > 49.0 && lat < 55.0 && lng > 14.1 && lng < 24.1;
   const inFinland = lat > 59.5 && lat < 70.1 && lng > 20 && lng < 31.6;
   const inIceland = lat > 63.0 && lat < 67.0 && lng > -25.0 && lng < -13.0;
+  const inNorway = lat > 57.5 && lat < 81.5 && lng > 4.0 && lng < 35.0; // incl. Svalbard
   const inBalkans = inBulgaria || inGreece || inSerbia || inMacedonia || inRomania || inTurkey;
-  const inWesternEurope = inItaly || inCzechia || inSlovakia || inGermany || inFrance || inSpain || inPoland || inFinland || inIceland;
+  const inWesternEurope = inItaly || inCzechia || inSlovakia || inGermany || inFrance || inSpain || inPoland || inFinland || inIceland || inNorway;
 
   if (lat > 35 && lat < 72 && lng > -11 && lng < 40 && !inBalkans && !inWesternEurope) {
     regions.push('europe');
@@ -624,6 +633,12 @@ function getRegionsForBounds(lat: number, lng: number, radius: number): string[]
   if (inPoland) regions.push('poland');
   if (inFinland) regions.push('finland');
   if (inIceland) regions.push('iceland');
+  if (inNorway) regions.push('norway');
+
+  // OpenTrafficCamMap - state-DOT HLS cameras across the US (incl. Alaska)
+  if (lat > 24 && lat < 72 && lng > -170 && lng < -66) regions.push('us-opentrafficcam');
+  // Austin, TX open data
+  if (lat > 30.0 && lat < 30.6 && lng > -98.0 && lng < -97.4) regions.push('austin');
 
   // Middle East
   const inMiddleEast = lat > 29 && lat < 34.5 && lng > 34 && lng < 36.5;
