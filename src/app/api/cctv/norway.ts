@@ -1,5 +1,5 @@
 import { inflateRawSync } from 'node:zlib';
-import type { CctvCamera } from './types';
+import { isSecureFeed, type CctvCamera } from './types';
 
 /**
  * OSIRIS - Norway CCTV Cameras (Kamerakartet)
@@ -199,13 +199,6 @@ const MANUAL_CAMERAS: CctvCamera[] = [
     stream_type: 'jpg', source: 'Kamerakartet',
   },
   {
-    id: 'no-manual-drobak-gjestebrygga',
-    lat: 59.6636, lng: 10.6280,
-    name: 'Drøbak Gjestebrygga', city: 'Drøbak', country: 'Norway',
-    feed_url: 'http://193.214.77.234:8005/axis-cgi/jpg/image.cgi',
-    stream_type: 'mjpeg', source: 'Kamerakartet',
-  },
-  {
     id: 'no-manual-bergen-vaagen',
     lat: 60.39647, lng: 5.32079,
     name: 'Bergen - Vågen', city: 'Bergen', country: 'Norway',
@@ -236,6 +229,11 @@ export async function fetchNorwayCameras(): Promise<CctvCamera[]> {
         : resolveImageUrl(p.href);
       const embed = image ? null : resolveEmbedUrl(p.href);
       if (!image && !embed) continue;
+      // 100 of the ~1300 resolvable placemarks are http, across ~60 hosts - far
+      // too many to whitelist in the image proxy, and widening that proxy to
+      // arbitrary hosts would make it an open relay. Add a single host to
+      // ALLOWED_HOSTS in ./proxy/route.ts to bring one back.
+      if (!isSecureFeed(image || embed!)) continue;
 
       cams.push({
         id: `no-${p.lat.toFixed(5)}-${p.lng.toFixed(5)}`,

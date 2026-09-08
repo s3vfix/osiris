@@ -30,3 +30,13 @@ export function inferStreamType(url: string): CctvStreamType {
   }
   return 'jpg';
 }
+
+/**
+ * A plain-http feed cannot render on an https page: browsers auto-upgrade
+ * image and media requests and block whatever fails, so such a camera is a
+ * dead pin rather than a working one. Sources whose upstream index mixes both
+ * schemes filter with this rather than shipping tiles that cannot load.
+ */
+export function isSecureFeed(url: string): boolean {
+  return url.startsWith('https://');
+}

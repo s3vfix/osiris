@@ -7,6 +7,7 @@ const dataset = {
       { description: 'I-75 at Hopple', latitude: 39.14, longitude: -84.54, direction: 'N', url: 'https://x/p.m3u8' },
       { description: 'no coords', url: 'https://x/q.m3u8' },
       { description: 'no url', latitude: 39.1, longitude: -84.5 },
+      { description: 'plain http', latitude: 39.2, longitude: -84.6, url: 'http://x/s.m3u8' },
     ],
   },
   California: {
@@ -33,7 +34,11 @@ describe('mapDataset', () => {
     expect(mapDataset(dataset).some(c => c.city.endsWith('California'))).toBe(false);
   });
 
-  it('drops rows with no coordinates or no stream', () => {
+  it('drops a plain-http stream, which cannot play on an https page', () => {
+    expect(mapDataset(dataset).some(c => c.stream_url?.startsWith('http://'))).toBe(false);
+  });
+
+  it('drops rows with no coordinates, no stream, or an insecure stream', () => {
     expect(mapDataset(dataset)).toHaveLength(1);
   });
 

@@ -1,4 +1,4 @@
-import type { CctvCamera } from './types';
+import { isSecureFeed, type CctvCamera } from './types';
 
 /**
  * OSIRIS - OpenTrafficCamMap (United States)
@@ -37,6 +37,8 @@ export function mapDataset(data: Record<string, Record<string, OtcmCamera[]>>): 
     for (const [city, list] of Object.entries(cities || {})) {
       (list || []).forEach((cam, i) => {
         if (!Number.isFinite(cam.latitude) || !Number.isFinite(cam.longitude) || !cam.url) return;
+        // 299 of the ~3500 streams are plain http and cannot play on an https page.
+        if (!isSecureFeed(cam.url)) return;
 
         const direction = cam.direction ? ` (${cam.direction})` : '';
         cams.push({

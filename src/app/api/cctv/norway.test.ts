@@ -105,3 +105,29 @@ describe('isViewerPage', () => {
     expect(isViewerPage('https://kamerakartet.no/tekst')).toBe(false);
   });
 });
+
+describe('http feeds', () => {
+  it('are dropped, because an https page cannot render them', async () => {
+    const originalFetch = globalThis.fetch;
+    // One https camera and one http camera, both otherwise valid.
+    const kml = `<kml><Document>
+      <Placemark><name>Secure - cam</name>
+        <description><![CDATA[<a href="https://ok.no/cam.jpg">x</a>]]></description>
+        <Point><coordinates>10,60,0</coordinates></Point></Placemark>
+      <Placemark><name>Insecure - cam</name>
+        <description><![CDATA[<a href="http://old.no/cam.jpg">x</a>]]></description>
+        <Point><coordinates>11,61,0</coordinates></Point></Placemark>
+    </Document></kml>`;
+    globalThis.fetch = (async () => ({
+      ok: true,
+      arrayBuffer: async () => makeKmz('alle.kml', kml),
+    })) as unknown as typeof fetch;
+
+    const { fetchNorwayCameras } = await import('./norway');
+    const cams = await fetchNorwayCameras();
+    globalThis.fetch = originalFetch;
+
+    const fromKmz = cams.filter(c => c.id.startsWith('no-6'));
+    expect(fromKmz.map(c => c.feed_url)).toEqual(['https://ok.no/cam.jpg']);
+  });
+});
