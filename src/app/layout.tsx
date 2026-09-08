@@ -4,7 +4,7 @@ import "./globals.css";
 
 const SITE_URL = "https://world.s3v.no";
 const SITE_NAME = "S3V";
-const SITE_TITLE = "S3V — Open Source Intelligence Platform | Live Flight Tracking, CCTV, OSINT Tools & More";
+const SITE_TITLE = "S3V - Open Source Intelligence Platform | Live Flight Tracking, CCTV, OSINT Tools & More";
 const SITE_DESCRIPTION = "The open-source Palantir alternative. Track 10,000+ aircraft, 2,000 satellites, and worldwide CCTV cameras in real-time on a 3D globe. Run Nmap scans, DNS lookups, WHOIS queries, SSL cert analysis & threat intelligence — all from your browser. 20+ live data feeds including earthquakes, wildfires, nuclear facilities, cyber threats, and global conflicts. Free & open source.";
 
 export const viewport: Viewport = {
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: "S3V — Open-Source Global Intelligence | Live Flights, CCTV, Satellites & OSINT Tools",
+    title: "S3V - Open-Source Global Intelligence | Live Flights, CCTV, Satellites & OSINT Tools",
     description: "Track 10K+ aircraft, 2K satellites & worldwide CCTV on a 3D globe. Run Nmap, DNS, WHOIS & threat intel scans from your browser. 20+ live intelligence feeds. Free. Open source.",
     type: "website",
     siteName: SITE_NAME,
@@ -102,14 +102,14 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "S3V — Open Source Intelligence Platform with Live Tracking & OSINT Tools",
+        alt: "S3V - Open Source Intelligence Platform with Live Tracking & OSINT Tools",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "S3V — Open Source Global Intelligence | Live Tracking + OSINT Tools",
+    title: "S3V - Open Source Global Intelligence | Live Tracking + OSINT Tools",
     description: "Track 10K+ flights, satellites & CCTV worldwide. Run Nmap, DNS, WHOIS scans from your browser. 20+ live intel feeds. Free & open source.",
     images: [`${SITE_URL}/og-image.png`],
   },
@@ -129,7 +129,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "S3V — OSINT Toolkit & Intelligence Platform",
+  name: "S3V - OSINT Toolkit & Intelligence Platform",
   alternateName: ["S3V", "world.s3v.no"],
   url: SITE_URL,
   description: SITE_DESCRIPTION,
