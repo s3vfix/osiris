@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { stealthFetch } from '@/lib/stealthFetch';
+import { fetchFr24Aircraft } from './fr24';
 
 export const maxDuration = 60;
 
@@ -334,8 +335,11 @@ export async function GET() {
       ? { signal: AbortSignal.timeout(30000), headers: { Authorization: `Bearer ${token}` } }
       : { signal: AbortSignal.timeout(30000) };
 
-    const [milRes, osRes] = await Promise.allSettled([
+    const [milRes, fr24Res, osRes] = await Promise.allSettled([
       stealthFetch(`${ADSBFI_BASE}/mil`, { signal: AbortSignal.timeout(15000) }),
+      // Keyless, carries aircraft type, and answers in one round trip per zone -
+      // this is what puts civilian traffic on the map without OpenSky credentials.
+      fetchFr24Aircraft(),
       skipOpenSky
         ? Promise.reject(new Error('OpenSky in cooldown'))
         // extended=1 appends the ADS-B emitter category as an 18th field. Without
@@ -360,6 +364,13 @@ export async function GET() {
       }
     }
     const milCount = allRaw.length;
+
+    if (fr24Res.status === 'fulfilled') {
+      ingestAc(fr24Res.value, allRaw, seenHex);
+    } else {
+      console.warn('[OSIRIS] FR24 zone feed failed:', fr24Res.reason);
+    }
+    const fr24Count = allRaw.length - milCount;
 
     // Refresh the OpenSky snapshot when one was due; otherwise the existing one
     // carries over untouched.
@@ -406,7 +417,7 @@ export async function GET() {
     // rather than 429, so sweeping it every cycle would quietly exhaust it and
     // look like empty airspace. Paced at ~1 req/s; 30 regions ≈ 33s, inside the
     // 60s maxDuration above.
-    if (!openSkyWorked) {
+    if (!openSkyWorked && fr24Count === 0) {
       source = 'regional';
       console.warn('[OSIRIS] no OpenSky snapshot — falling back to adsb.fi regional sweep');
 
@@ -422,6 +433,8 @@ export async function GET() {
           'the anonymous 400 credits/day pool cannot sustain a live map'
         );
       }
+    } else if (fr24Count > 0) {
+      source = openSkyWorked ? 'fr24+opensky' : 'fr24';
     } else {
       source = hasOpenSkyCreds() ? 'opensky-auth' : 'opensky-anon';
     }
@@ -461,7 +474,8 @@ export async function GET() {
       // is visible in the payload rather than silently emptying the map.
       providers: {
         adsbfi_mil:      milCount,
-        adsbfi_regional: openSkyWorked ? 0 : allRaw.length - milCount,
+        fr24:            fr24Count,
+        adsbfi_regional: source === 'regional' ? allRaw.length - milCount - fr24Count : 0,
         opensky:         osSnapshot.length,
         opensky_auth:    hasOpenSkyCreds(),
         opensky_age_s:   osSnapshotTime ? Math.round((Date.now() - osSnapshotTime) / 1000) : null,
