@@ -1,22 +1,27 @@
 {
-  "name": "OSIRIS — Global Intelligence Platform",
-  "short_name": "OSIRIS",
-  "description": "Real-time global OSINT intelligence dashboard. Track 10K+ aircraft, 2K satellites, worldwide CCTV, earthquakes, wildfires, nuclear facilities, and more.",
+  "name": "S3V \u2014 Global Intelligence Platform",
+  "short_name": "S3V",
+  "description": "Real-time global OSINT dashboard. Live aircraft, satellites, 27,000+ CCTV cameras, earthquakes, wildfires, conflict zones and cyber threats on one map.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#06060C",
   "theme_color": "#D4AF37",
   "orientation": "landscape-primary",
-  "categories": ["security", "intelligence", "analytics", "news"],
+  "categories": [
+    "security",
+    "intelligence",
+    "analytics",
+    "news"
+  ],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/s3v-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/osiris-icon.png",
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
