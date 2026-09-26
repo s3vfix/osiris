@@ -382,7 +382,7 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
                  viewport. With a chart open the content is taller than the
                  screen, and nested scrollers here would mean choosing which
                  one you meant to scroll. */
-              <div className="space-y-2 overflow-y-auto styled-scrollbar max-h-[calc(100vh-9rem)] pr-0.5">
+              <div className="space-y-2 overflow-y-auto styled-scrollbar max-h-[calc(100dvh-9rem)] pr-0.5">
                 {breadthBlock}
                 {spaceBlock}
                 {aiBlock}

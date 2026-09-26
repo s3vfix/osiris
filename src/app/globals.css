@@ -408,11 +408,12 @@ html:has(.docs-root) body {
 .mobile-nav-btn {
   display: flex; flex-direction: column; align-items: center; gap: 1px;
   padding: 5px 6px; border-radius: 8px;
-  font-family: var(--font-hud); font-size: 6px; letter-spacing: 0.08em;
+  font-family: var(--font-hud); font-size: 7px; letter-spacing: 0.08em;
   color: var(--text-muted); background: transparent;
   border: none; cursor: pointer; transition: all 0.2s ease;
   text-transform: uppercase;
   min-width: 0;
+  min-height: 44px; justify-content: center; /* finger-sized, was 31px */
   flex: 1;
   -webkit-tap-highlight-color: transparent;
 }
@@ -467,7 +468,7 @@ html:has(.docs-root) body {
 /* Small phones */
 @media (max-width: 390px) {
   :root { --edge-pad: 4px; }
-  .mobile-nav-btn { padding: 4px 3px; font-size: 5px; }
+  .mobile-nav-btn { padding: 4px 3px; font-size: 7px; }
   .mobile-nav-btn svg { width: 14px; height: 14px; }
 }
 
@@ -478,7 +479,7 @@ html:has(.docs-root) body {
   .status-bar-desktop { display: none !important; }
   .mobile-nav { display: block; }
   .mobile-nav-inner { padding: 4px 2px 2px; }
-  .mobile-nav-btn { padding: 3px 4px; font-size: 5px; }
+  .mobile-nav-btn { padding: 3px 4px; font-size: 7px; min-height: 40px; }
   .mobile-nav-btn svg { width: 14px; height: 14px; }
   .mobile-nav-btn span { display: none; }
   .mobile-drawer-handle { margin: 4px auto 4px; }
@@ -492,6 +493,12 @@ html:has(.docs-root) body {
 /* Safe area for horizontal notch (landscape) */
 @supports (padding: env(safe-area-inset-left)) {
   .mobile-nav { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+}
+
+/* iOS Safari zooms the page when a focused field is under 16px. Unlayered, so it
+   beats the text-[10px] utilities; touch only, so desktop keeps its dense HUD. */
+@media (pointer: coarse) {
+  input, textarea, select { font-size: max(16px, 1em); }
 }
 
 /* ── Widescreen / Ultrawide Scaling ── */
